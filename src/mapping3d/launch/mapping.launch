@@ -1,0 +1,108 @@
+
+<launch>
+  <!-- Backward compatibility launch file, use rtabmap.launch instead -->
+  
+  <!-- Your RGB-D sensor should be already started with "depth_registration:=true".
+        Examples:
+           $ roslaunch freenect_launch freenect.launch depth_registration:=true 
+           $ roslaunch openni2_launch openni2.launch depth_registration:=true -->
+ 
+  <!-- Choose visualization -->
+  <arg name="rviz"                    default="true" />
+  <arg name="rtabmapviz"              default="false" /> 
+  
+  <!-- Localization-only mode -->
+  <arg name="localization"            default="false"/>
+  
+  <!-- Corresponding config files -->
+  <arg name="rtabmapviz_cfg"          default="~/.ros/rtabmap_gui.ini" />
+  <arg name="rviz_cfg"                default="$(find rtabmap_ros)/launch/config/rgbd.rviz" />
+  
+  <arg name="frame_id"                default="base_footprint"/>   <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
+  <arg name="database_path"           default="~/.ros/terzotd.db"/>
+  <arg name="rtabmap_args"            default="delete_db_on_start"/>              <!-- delete_db_on_start, udebug -->
+  <arg name="launch_prefix"           default=""/>              <!-- for debugging purpose, it fills launch-prefix tag of the nodes -->
+  <arg name="approx_sync"             default="true"/>         <!-- if timestamps of the input topics are not synchronized -->
+   
+  <arg name="rgb_topic"               default="/zed2/left/image_rect_color" />
+  <arg name="depth_registered_topic"  default="/zed2/depth/depth_registered" />
+  <arg name="camera_info_topic"       default="/zed2/left/camera_info" />
+  <arg name="compressed"              default="false"/>
+   
+  <arg name="subscribe_scan"          default="false"/>         <!-- Assuming 2D scan if set, rtabmap will do 3DoF mapping instead of 6DoF -->
+  <arg name="scan_topic"              default="/scan"/>
+  
+  <arg name="subscribe_scan_cloud"    default="false"/>         <!-- Assuming 3D scan if set -->
+  <arg name="scan_cloud_topic"        default="/scan_cloud"/>
+  
+  <arg name="visual_odometry"         default="true"/>          <!-- Generate visual odometry -->
+  <arg name="odom_topic"              default="/rtabmap/rgbd_odometry"/>         <!-- Odometry topic used if visual_odometry is false -->
+  <arg name="odom_frame_id"           default=""/>              <!-- If set, TF is used to get odometry instead of the topic -->
+   
+  <arg name="namespace"               default="rtabmap"/>
+  <arg name="wait_for_transform"      default="0.2"/>
+  
+  <include file="$(find rtabmap_ros)/launch/rtabmap.launch">
+    <arg name="rtabmapviz"              value="$(arg rtabmapviz)" /> 
+    <arg name="rviz"                    value="$(arg rviz)" />
+    <arg name="localization"            value="$(arg localization)"/>
+    <arg name="gui_cfg"                 value="$(arg rtabmapviz_cfg)" />
+    <arg name="rviz_cfg"                value="$(arg rviz_cfg)" />
+  
+    <arg name="frame_id"                value="$(arg frame_id)"/>
+    <arg name="namespace"               value="$(arg namespace)"/>
+    <arg name="database_path"           value="$(arg database_path)"/>
+    <arg name="wait_for_transform"      value="$(arg wait_for_transform)"/>
+    <arg name="rtabmap_args"            value="$(arg rtabmap_args)"/>  
+    <arg name="launch_prefix"           value="$(arg launch_prefix)"/>          
+    <arg name="approx_sync"             value="$(arg approx_sync)"/>
+
+    <arg name="rgb_topic"               value="$(arg rgb_topic)" />
+    <arg name="depth_topic"             value="$(arg depth_registered_topic)" />
+    <arg name="camera_info_topic"       value="$(arg camera_info_topic)" />
+    <arg name="compressed"              value="$(arg compressed)"/>                                                                                
+   
+    <arg name="subscribe_scan"          value="$(arg subscribe_scan)"/>
+    <arg name="scan_topic"              value="$(arg scan_topic)"/>
+  
+    <arg name="subscribe_scan_cloud"    value="$(arg subscribe_scan_cloud)"/>
+    <arg name="scan_cloud_topic"        value="$(arg scan_cloud_topic)"/>
+   
+    <arg name="visual_odometry"         value="$(arg visual_odometry)"/>          
+    <arg name="odom_topic"              value="$(arg odom_topic)"/>    
+    <arg name="odom_frame_id"           value="$(arg odom_frame_id)"/>         
+    <arg name="odom_args"               value="$(arg rtabmap_args)"/>
+    <!-- <param name="Vis/MaxFeatures" type="string" value="0"/> -->
+     <!-- <param name="cloud_noise_filtering_radius" value="0.05"/>
+    <param name="cloud_noise_filtering_min_neighbors" value="2"/>
+    <param name="queue_size" type="int" value="50"/>
+        <param name="RGBD/OptimizeMaxError" type="double" value="0.0"/>
+     RTAB-Map's parameters -->
+      <!--tempo dopo cui parte della mappa scompare (ma esiste) per migliorare performace-->
+      <!-- <param name="Rtabmap/TimeThr" type="string" value="300"/> -->
+      <!-- <param name="Rtabmap/MemoryThr" type="int" value="0"/> -->
+
+      <!--frequenza di aggiornamento della mappa-->
+      <!-- <param name="Rtabmap/DetectionRate" type="string" value="15"/> -->
+
+      <!-- KeyPoints parameters -->
+      <!-- <param name="Kp/MaxFeatures" type="string" value="1000"/> -->
+      <!-- <param name="Kp/RoiRatios" type="string" value="0.03 0.03 0.04 0.04"/> -->
+      <!--A new map is created if a change of odometry translation greater than X m is detected (0 m = disabled)-->
+      <!-- <param name="RGBD/NewMapOdomChangeDistance"  type="float" value="0.35"/> -->
+      <!--Minimum linear displacement (m) to update the map. Rehearsal is done prior to this, so weights are still updated-->
+      <!-- <param name="RGBD/LinearUpdate"          type="float"  value="0.1"/> -->
+      <!--Minimum angular displacement (rad) to update the map. Rehearsal is done prior to this, so weights are still updated.-->
+      <!-- <param name="RGBD/AngularUpdate"            type="float"  value="0.1"/>  -->
+      <!--Minimum feature correspondences to compute/accept the transformation-->  
+      <!-- <param name="Vis/MinInliers"               type="int" value="35" /> -->
+      <!--Maximum distance (m) of the mean distance of inliers from the camera to accept the transformation. 0 means disabled-->  
+      <!-- <param name="Vis/MeanInliersDistance"     type="float"  value="0.0"/>  -->
+      <!--Max depth of the features (0 means no limit)-->    
+      <!-- <param name="Vis/MaxDepth"                 type="float" value="5" />      -->
+      <!--0 no limits--> 
+      <!-- <param name="Vis/MaxFeatures"             type="int"  value="0"/>       -->
+  </include>
+  
+
+</launch>
