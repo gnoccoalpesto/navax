@@ -1,0 +1,6 @@
+[submodule "src/ar_track_alvar"]
+	path = src/ar_track_alvar
+	url = https://github.com/machinekoder/ar_track_alvar.git
+[submodule "src/ground_preproc"]
+	path = src/ground_preproc
+	url = https://github.com/alma-x/ground_preproc.git
